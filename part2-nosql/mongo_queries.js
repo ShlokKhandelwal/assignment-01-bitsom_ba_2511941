@@ -1,0 +1,80 @@
+// MongoDB Queries for Product Catalog
+
+// OP1: insertMany() — insert all 3 documents
+db.products.insertMany([
+  {
+    "_id": "P001",
+    "name": "Samsung 4K Smart TV",
+    "category": "Electronics",
+    "price": 75000,
+    "brand": "Samsung",
+    "in_stock": true,
+    "specs": {
+      "screen_size": "55 inch",
+      "resolution": "4K Ultra HD",
+      "voltage": "220V",
+      "warranty_years": 2
+    },
+    "tags": ["television", "smart tv", "4K", "samsung"]
+  },
+  {
+    "_id": "P002",
+    "name": "Men's Cotton Kurta",
+    "category": "Clothing",
+    "price": 899,
+    "brand": "FabIndia",
+    "in_stock": true,
+    "specs": {
+      "fabric": "100% Cotton",
+      "sizes_available": ["S", "M", "L", "XL", "XXL"],
+      "colors": ["white", "blue", "beige"],
+      "care": "Machine wash cold"
+    },
+    "tags": ["kurta", "ethnic", "cotton", "men"]
+  },
+  {
+    "_id": "P003",
+    "name": "Organic Whole Wheat Flour",
+    "category": "Groceries",
+    "price": 120,
+    "brand": "Aashirvaad",
+    "in_stock": true,
+    "specs": {
+      "weight_kg": 5,
+      "expiry_date": "2024-12-31",
+      "nutritional_info": {
+        "calories_per_100g": 340,
+        "protein_g": 12,
+        "carbs_g": 70
+      },
+      "organic": true
+    },
+    "tags": ["flour", "wheat", "organic", "grocery"]
+  }
+]);
+
+// OP2: find() — retrieve all Electronics with price > 20000
+db.products.find({
+  category: "Electronics",
+  price: { $gt: 20000 }
+});
+
+// OP3: find() — retrieve all Groceries expiring before 2025-01-01
+db.products.find({
+  category: "Groceries",
+  "specs.expiry_date": { $lt: "2025-01-01" }
+});
+
+// OP4: updateOne() — add a discount_percent field to Samsung TV
+db.products.updateOne(
+  { _id: "P001" },
+  { $set: { discount_percent: 10 } }
+);
+
+// OP5: createIndex() — create index on category field
+// Reason: We frequently filter and search products by category
+// (Electronics, Clothing, Groceries). An index on category makes
+// these queries much faster — instead of scanning every document,
+// MongoDB jumps directly to the matching ones. This is critical
+// when the catalog grows to thousands of products.
+db.products.createIndex({ category: 1 });
